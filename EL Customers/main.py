@@ -104,6 +104,15 @@ class GUI:
         self.root.mainloop()
         
     def AddNewWindow(self):
+        self.FIRSTNAME.set("")
+        self.LASTNAME.set("")
+        self.GENDER.set("")
+        self.AGE.set("")
+        self.ADDRESS.set("")
+        self.CONTACT.set("")
+        self.TRANSACTION.set("")
+        self.AMOUNT.set("")
+        self.STATUS.set("")
         self.NewWindow = Toplevel()
         self.NewWindow.title("Customer Management System")
         width = 400
@@ -148,7 +157,7 @@ class GUI:
         lbl_status.grid(row=8, sticky=W)
         
 
-        #===================ENTRY===============================
+        #===================ENTRY================================
         firstname = Entry(ContactForm, textvariable=self.FIRSTNAME, font=('arial', 14))
         firstname.grid(row=0, column=1)
         lastname = Entry(ContactForm, textvariable=self.LASTNAME, font=('arial', 14))
@@ -303,8 +312,92 @@ class GUI:
             btn_addcon = Button(ContactForm, text="Update", width=50, command=self.UpdateData)
             btn_addcon.grid(row=9, columnspan=2, pady=10)
             
+            
+            
         else:
-            pass
+            self.customerWindow = Toplevel()
+            self.customerWindow.title(self.LASTNAME.get())
+            width = 600
+            height = 400
+            screen_width = self.customerWindow.winfo_screenwidth()
+            screen_height = self.customerWindow.winfo_screenheight()
+            x = (screen_width/2) - (width/2)
+            y = (screen_height/2) - (height/2)
+            self.customerWindow.geometry("%dx%d+%d+%d" % (width, height, x, y))
+            self.customerWindow.resizable(0, 0)
+            #self.customerWindow.config(bg="black")
+            
+            self.date = StringVar()
+            self.time = StringVar()
+            self.address = StringVar()
+            self.age = StringVar()
+            self.transaction = StringVar()
+            self.amount = StringVar()
+            self.status = StringVar()
+            self.id = StringVar()
+
+            
+            
+            self.CustomerTop = Frame(self.customerWindow, width=500, bd=1, relief=SOLID)
+            self.CustomerTop.pack(side=TOP)
+            self.CustomerMid = Frame(self.customerWindow, width=500,  bg="black")
+            self.CustomerMid.pack(side=TOP)
+            #self.CustomerMidLeft = Frame(self.CustomerMid, width=100)
+            #self.CustomerMidLeft.pack(side=LEFT, pady=10)
+            #elf.CustomerMidLeftPadding = Frame(self.CustomerMid, width=370, bg="black")
+            #self.CustomerMidLeftPadding.pack(side=LEFT)
+            #self.CustomerMidRight = Frame(self.CustomerMid, width=100)
+            #self.CustomerMidRight.pack(side=RIGHT, pady=10)
+            self.CustomerTableMargin = Frame(self.customerWindow, width=500)
+            self.CustomerTableMargin.pack(side=TOP)
+            #============================LABELS======================================
+            self.Customerlbl_title = Label(self.CustomerTop, text=self.LASTNAME.get(), font=('arial', 16), width=500,bg="blue")
+            self.Customerlbl_title.pack(fill=X)
+
+            #============================ENTRY=======================================
+
+            #============================BUTTONS=====================================
+            #self.btn_add = Button(self.MidLeft, text="+ ADD NEW", bg="#66ff66", command=self.AddNewWindow)
+            #self.btn_add.pack()
+            #self.btn_delete = Button(self.MidRight, text="DELETE", bg="red", command=self.DeleteData)
+            #self.btn_delete.pack(side=RIGHT)
+
+            #============================TABLES======================================
+            self.Customerscrollbarx = Scrollbar(self.CustomerTableMargin, orient=HORIZONTAL)
+            self.Customerscrollbary = Scrollbar(self.CustomerTableMargin, orient=VERTICAL)
+            self.Customertree = ttk.Treeview(self.CustomerTableMargin, columns=("MemberID", "Date", "Time", "Address", "Age", "Transaction", "Amount", "Status"), height=400, selectmode="extended", yscrollcommand=self.scrollbary.set, xscrollcommand=self.scrollbarx.set)
+            self.Customerscrollbary.config(command=self.Customertree.yview)
+            self.Customerscrollbary.pack(side=RIGHT, fill=Y)
+            self.Customerscrollbarx.config(command=self.Customertree.xview)
+            self.Customerscrollbarx.pack(side=BOTTOM, fill=X)
+            self.Customertree.heading('MemberID', text="MemberID", anchor=W)
+            self.Customertree.heading('Date', text="Date", anchor=W)
+            self.Customertree.heading('Time', text="Time", anchor=W)
+            self.Customertree.heading('Address', text="Address", anchor=W)
+            self.Customertree.heading('Age', text="Age", anchor=W)
+            self.Customertree.heading('Transaction', text="Transaction", anchor=W)
+            self.Customertree.heading('Amount', text="Amount", anchor=W)
+            self.Customertree.heading('Status', text="Status", anchor=W)
+            self.Customertree.column('#0', stretch=NO, minwidth=0, width=0)
+            self.Customertree.column('#1', stretch=NO, minwidth=0, width=0)
+            self.Customertree.column('#2', stretch=NO, minwidth=0, width=90)
+            self.Customertree.column('#3', stretch=NO, minwidth=0, width=80)
+            self.Customertree.column('#4', stretch=NO, minwidth=0, width=90)
+            self.Customertree.column('#5', stretch=NO, minwidth=0, width=90)
+            self.Customertree.column('#6', stretch=NO, minwidth=0, width=90)
+            self.Customertree.column('#7', stretch=NO, minwidth=0, width=90)
+            self.Customertree.pack()
+            
+            file = open('Customers/'+str(mem_id)+'.csv')
+            content = file.readlines()
+            content.reverse()
+            for line in content:
+                line = line.strip().split(',')
+                id, (date, time), address, age, transaction, amount, status = line[-1], line[0].split(), line[1], line[2], line[3], line[4], line[5]
+                tup = (id, date, time, address, age, transaction, amount, status)
+                self.Customertree.insert('', 'end', values=(tup))
+            file.close()
+            
         
     
     def SubmitData(self):
@@ -329,6 +422,13 @@ class GUI:
             file.write(self.LASTNAME.get().title() + "," + self.FIRSTNAME.get().title() + "," + self.GENDER.get() + "," + self.AGE.get() + "," + self.ADDRESS.get() + "," + self.CONTACT.get() + "," + self.TRANSACTION.get() + "," + self.AMOUNT.get() + "," + self.STATUS.get() + "," + str(id) + "\n")
             file.close()
             
+            file = open('Customers/'+str(id)+'.csv', 'a')
+            now = datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+            file.write(dt_string + "," + self.ADDRESS.get() + "," + self.AGE.get() + "," + self.TRANSACTION.get()+ "," + self.AMOUNT.get() +  "," + self.STATUS.get() + "," + str(id) + "\n")
+            
+            file.close()
+            
             self.FIRSTNAME.set("")
             self.LASTNAME.set("")
             self.GENDER.set("")
@@ -349,6 +449,8 @@ class GUI:
                 self.tree.insert('', 'end', values=(tup))
 
             file.close()
+            
+            
 
     def UpdateData(self):
         mem_id = self.selecteditem[0]
@@ -378,7 +480,17 @@ class GUI:
             self.tree.insert('', 'end', values=(tup))
 
         file.close()
-            
+        
+        if self.AMOUNT.get() != '':
+            file = open('Customers/'+str(mem_id)+'.csv', 'a')
+            now = datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        
+            file.write(dt_string + "," + self.ADDRESS.get() + "," + self.AGE.get() + "," + self.TRANSACTION.get()+ "," + self.AMOUNT.get() +  "," + self.STATUS.get() + "," + str(id) + "\n")
+        
+            file.close()
+        
+        
 if __name__=='__main__':        
         
     GUI()
