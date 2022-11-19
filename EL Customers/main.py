@@ -429,6 +429,9 @@ class GUI:
             
             file.close()
             
+            
+            self.AddSales()
+            
             self.FIRSTNAME.set("")
             self.LASTNAME.set("")
             self.GENDER.set("")
@@ -489,6 +492,42 @@ class GUI:
             file.write(dt_string + "," + self.ADDRESS.get() + "," + self.AGE.get() + "," + self.TRANSACTION.get()+ "," + self.AMOUNT.get() +  "," + self.STATUS.get() + "," + str(id) + "\n")
         
             file.close()
+            
+            self.AddSales()
+            
+        self.TRANSACTION.set("")
+        self.AMOUNT.set("")
+        self.STATUS.set("")
+        
+        
+    def AddSales(self):
+        now = datetime.now()
+        dt_string = now.strftime("%d_%m_%Y")
+        try:
+            op = open('Sales/'+dt_string+'.in')
+            Csale = float(op.readline().strip())
+            Asale = float(op.readline().strip())
+            op.close()
+        except:
+            Csale = 0
+            Asale = 0
+
+        file = open('Sales/'+dt_string+'.in', 'w')
+        if self.LASTNAME.get() != 'El':
+            Csale += float(self.AMOUNT.get())
+            Asale += 0
+        else:
+            Csale += 0
+            Asale += float(self.AMOUNT.get())
+        file.write(str(Csale)+'\n')
+        file.write(str(Asale)+'\n')
+        
+        file.close()
+        
+        file = open('Sales/dates.in', 'a')
+        file.close()
+            
+        
         
         
 if __name__=='__main__':        
