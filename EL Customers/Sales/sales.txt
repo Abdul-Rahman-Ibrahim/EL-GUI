@@ -1,0 +1,2 @@
+Date                Admin Sale         Customer Sale          Profit
+26_11_2022          400.0              1321.0                 921.0
